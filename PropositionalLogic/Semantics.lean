@@ -16,7 +16,7 @@ def eval : Fml α → Val α → Bool
   | Fml.conj φ ψ, v => ((eval φ v) && (eval ψ v))
   | Fml.disj φ ψ, v => (eval φ v) || (eval ψ v)
 
-instance : CoeFun (Val α) (fun _ => Fml α → Bool) where 
+instance : CoeFun (Val α) (fun _ => Fml α → Bool) where
   coe v ϕ := eval ϕ v
 
 notation "⟦" ϕ " , " v "⟧" => eval ϕ v
@@ -24,12 +24,18 @@ notation "⟦" ϕ " , " v "⟧" => eval ϕ v
 @[simp]
 lemma bivalence_one (v : Val α) (ϕ : Fml α) :
     ⟦ ϕ , v ⟧ ≠ true → ⟦ ϕ , v ⟧ = false := by
-      grind
+      intro hypothesis
+      cases hypotheis_eval : eval ϕ v
+      rfl
+      contradiction
 
 @[simp]
 lemma bivalence_two (v : Val α) (ϕ : Fml α) :
     ⟦ ϕ , v ⟧ ≠ false → ⟦ ϕ , v ⟧ = true := by
-      grind
+      intro hypothesis
+      cases hypotheis_eval : eval ϕ v
+      contradiction
+      rfl
 
 @[simp]
 lemma bot (v : Val α) : @eval α Fml.bot v = false := by
@@ -90,14 +96,46 @@ lemma imp_false (ϕ ψ : Fml α) (v : Val α) :
 @[simp]
 lemma iff_true (ϕ ψ : Fml α) (v : Val α) :
     ⟦ϕ ↔ ψ , v⟧ = true ↔ ((⟦ϕ , v⟧ = true) ↔ (⟦ψ , v⟧ = true)) := by
-      simp[Fml.iff]
-      grind
+      constructor
+      intro h
+      constructor
+      intro h_links
+      cases hψ : ⟦ψ , v⟧ with
+      | true => rfl
+      | false => simp [Fml.iff, h_links, hψ] at h
+      intro h_rechts
+      cases hϕ : ⟦ϕ , v⟧ with
+      | true => rfl
+      | false => simp [Fml.iff, hϕ, h_rechts] at h
+      simp [Fml.iff]
+      intro h
+      cases hψ : ⟦ψ , v⟧ <;> cases hϕ : ⟦ϕ , v⟧
+      simp [hψ , hϕ] at *
+      simp [hψ , hϕ] at *
+      simp [hψ , hϕ] at *
+      simp [hψ , hϕ] at *
 
 @[simp]
 lemma iff_false (ϕ ψ : Fml α) (v : Val α) :
     ⟦ϕ ↔ ψ , v⟧ = false ↔ ((⟦ϕ , v⟧ = true) ↔ (⟦ψ , v⟧ = false)) := by
-      simp[Fml.iff]
-      grind
+      constructor
+      intro h
+      constructor
+      intro h_links
+      cases hψ : ⟦ψ , v⟧ with
+      | true => simp [Fml.iff, h_links, hψ] at h
+      | false => rfl
+      intro h_rechts
+      cases hϕ : ⟦ϕ , v⟧ with
+      | true => rfl
+      | false => simp [Fml.iff, hϕ, h_rechts] at h
+      simp [Fml.iff]
+      intro h
+      cases hψ : ⟦ψ , v⟧ <;> cases hϕ : ⟦ϕ , v⟧
+      simp [hψ , hϕ] at *
+      simp [hψ , hϕ] at *
+      simp [hψ , hϕ] at *
+      simp [hψ , hϕ] at *
 
 @[simp]
 lemma conj_top (ϕ : Fml α) (v : Val α) :
@@ -119,10 +157,8 @@ lemma big_conj_true (Γ : List (Fml α)) (v : Val α) :
     ⟦⋀ Γ , v⟧ = true ↔ ∀ ϕ ∈ Γ, ⟦ϕ , v⟧ = true := by
       induction Γ with
       | nil => simp
-      | @cons ψ Γ' ih => 
-          simp at ih
-          simp
-          grind
+      | @cons ψ Γ' ih => simp [ih]
+
 @[simp]
 lemma big_conj_finset_true (Γ : Finset (Fml α)) (v : Val α) :
     ⟦⋀ Γ , v⟧ = true ↔ ∀ ϕ ∈ Γ, ⟦ϕ , v⟧ = true := by
@@ -134,10 +170,7 @@ lemma big_conj_false (Γ : List (Fml α)) (v : Val α) :
     ⟦⋀ Γ , v⟧ = false ↔ ∃ ϕ ∈ Γ, ⟦ϕ , v⟧ = false := by
       induction Γ with
       | nil => simp
-      | @cons ψ Γ' ih => 
-          simp at ih
-          simp
-          grind
+      | @cons ψ Γ' ih => simp [ih]
 
 @[simp]
 lemma big_conj_finset_false (Γ : Finset (Fml α)) (v : Val α) :
@@ -157,7 +190,10 @@ variable { α : Type u}
 @[simp]
 lemma truth_monotone {v : Val α } {Γ Δ : Set (Fml α )} (h : Γ ⊆ Δ) (g : ∀ψ ∈  Δ, ⟦ψ , v ⟧ = true) :
     ∀ψ ∈  Γ, ⟦ψ , v ⟧ = true := by
-      grind
+      intro ψ hψ
+      apply g
+      apply h hψ
+
 
 @[simp]
 lemma not_sat_iff_some_false (Γ : Set (Fml α)) : ¬ Sat Γ ↔ ∀ v : Val α, ∃ ψ ∈ Γ, ⟦ψ , v ⟧ = false := by
@@ -177,7 +213,7 @@ end Sat
 
 -- # Logical Consequence
 
-def Consequence { α : Type u} (Γ : Set (Fml α)) (ϕ : Fml α) : Prop := 
+def Consequence { α : Type u} (Γ : Set (Fml α)) (ϕ : Fml α) : Prop :=
   ∀ v : Val α, (∀ ψ ∈ Γ, ⟦ψ , v⟧ = true) → (⟦ϕ , v⟧ = true)
 
 notation Γ " ⊨ " ϕ => Consequence Γ ϕ
@@ -187,7 +223,7 @@ namespace Consequence
 
 variable { α : Type u}
 
-@[simp] 
+@[simp]
 lemma def_iff {Γ : Set (Fml α)} {ϕ : Fml α} :
     (Γ ⊨ ϕ) ↔ (∀ v : Val α, (∀ ψ ∈ Γ, ⟦ψ , v⟧ = true) → (⟦ϕ , v⟧ = true)) := by
   rfl
@@ -195,11 +231,16 @@ lemma def_iff {Γ : Set (Fml α)} {ϕ : Fml α} :
 @[simp]
 lemma consequence_iff_not_sat {Γ : Set (Fml α)} :
   ∀ ϕ : Fml α, (Γ ⊨ ϕ) ↔ ¬ Sat (Γ ∪ {¬ϕ}) := by
-    simp[Sat]
-    grind
+    intro ϕ
+    unfold Consequence Sat
+    constructor
+    intro links rechts
+    
+    -- grind
+
 
 @[simp]
-lemma non_consequence_iff_sat {Γ : Set (Fml α)} (ϕ : Fml α) : 
+lemma non_consequence_iff_sat {Γ : Set (Fml α)} (ϕ : Fml α) :
   (Γ ⊭ ϕ) ↔ Sat (Γ ∪ {¬ϕ}) := by
     simp[Sat]
     grind
@@ -211,7 +252,7 @@ lemma refl {Γ : Set (Fml α)} {ϕ : Fml α} (mem : ϕ ∈ Γ) : (Γ ⊨ ϕ) := 
 
 
 @[simp]
-lemma monotonicity {Γ Δ : Set (Fml α)} {ϕ : Fml α} 
+lemma monotonicity {Γ Δ : Set (Fml α)} {ϕ : Fml α}
     (h : Γ ⊨ ϕ) (g: Γ ⊆ Δ) : (Δ ⊨ ϕ) := by
     simp at h g
     simp
@@ -231,14 +272,14 @@ lemma bot_elim {Γ : Set (Fml α)} {ϕ : Fml α} (h: Γ ⊨ ⊥) : (Γ ⊨ ϕ) :
   grind
 
 @[simp]
-lemma neg_intro {Γ : Set (Fml α)} {ϕ : Fml α} 
+lemma neg_intro {Γ : Set (Fml α)} {ϕ : Fml α}
     (h : (Γ ∪ {ϕ}) ⊨ ⊥) : (Γ ⊨ ¬ϕ) := by
       simp at h
       simp
       grind
 
 @[simp]
-lemma neg_elim {Γ Δ : Set (Fml α)} {ϕ : Fml α}  (h : Γ ⊨ ϕ) (g : Δ ⊨ ¬ϕ) : 
+lemma neg_elim {Γ Δ : Set (Fml α)} {ϕ : Fml α}  (h : Γ ⊨ ϕ) (g : Δ ⊨ ¬ϕ) :
     ((Γ ∪ Δ) ⊨ ⊥) := by
     simp at h g
     simp
@@ -247,63 +288,63 @@ lemma neg_elim {Γ Δ : Set (Fml α)} {ϕ : Fml α}  (h : Γ ⊨ ϕ) (g : Δ ⊨
     grind
 
 @[simp]
-lemma conj_intro {Γ Δ : Set (Fml α)} {ϕ ψ : Fml α} 
+lemma conj_intro {Γ Δ : Set (Fml α)} {ϕ ψ : Fml α}
     (h : Γ ⊨ ϕ) (g : Δ ⊨ ψ) : ((Γ ∪ Δ) ⊨ ϕ ∧ ψ) := by
-      simp at h g 
+      simp at h g
       simp
       grind
 
 @[simp]
-lemma conj_elim_left {Γ : Set (Fml α)} {ϕ ψ : Fml α} (h : Γ ⊨ ϕ ∧ ψ): 
+lemma conj_elim_left {Γ : Set (Fml α)} {ϕ ψ : Fml α} (h : Γ ⊨ ϕ ∧ ψ):
     (Γ ⊨ ϕ):= by
       simp at h
       simp
       grind
 
 @[simp]
-lemma conj_elim_right {Γ : Set (Fml α)} {ϕ ψ : Fml α} (h : Γ ⊨ ϕ ∧ ψ): 
+lemma conj_elim_right {Γ : Set (Fml α)} {ϕ ψ : Fml α} (h : Γ ⊨ ϕ ∧ ψ):
     (Γ ⊨ ψ):= by
       simp at h
       simp
       grind
 
 @[simp]
-lemma disj_intro_left {Γ : Set (Fml α)} {ϕ ψ : Fml α} 
+lemma disj_intro_left {Γ : Set (Fml α)} {ϕ ψ : Fml α}
   (h : Γ ⊨ ϕ) : (Γ ⊨ ϕ ∨ ψ) := by
-    simp at h 
-    simp 
-    grind
-
-@[simp]
-lemma disj_intro_right {Γ : Set (Fml α)} {ϕ ψ : Fml α} 
-  (h : Γ ⊨ ψ) : (Γ ⊨ ϕ ∨ ψ) := by
-    simp at h 
-    simp 
-    grind
-
-@[simp]
-lemma disj_elim {Γ Δ Ξ : Set (Fml α)} {ϕ ψ χ : Fml α} 
-  (h : Γ ⊨  (ϕ ∨ ψ)) ( g : (Δ ∪ {ϕ}) ⊨ χ) (f : (Ξ ∪ {ψ}) ⊨ χ) : ((Γ ∪ Δ ∪ Ξ) ⊨ χ) := by
-    simp at h g f 
+    simp at h
     simp
     grind
 
 @[simp]
-lemma imp_intro {Γ : Set (Fml α)} {ϕ ψ : Fml α} 
+lemma disj_intro_right {Γ : Set (Fml α)} {ϕ ψ : Fml α}
+  (h : Γ ⊨ ψ) : (Γ ⊨ ϕ ∨ ψ) := by
+    simp at h
+    simp
+    grind
+
+@[simp]
+lemma disj_elim {Γ Δ Ξ : Set (Fml α)} {ϕ ψ χ : Fml α}
+  (h : Γ ⊨  (ϕ ∨ ψ)) ( g : (Δ ∪ {ϕ}) ⊨ χ) (f : (Ξ ∪ {ψ}) ⊨ χ) : ((Γ ∪ Δ ∪ Ξ) ⊨ χ) := by
+    simp at h g f
+    simp
+    grind
+
+@[simp]
+lemma imp_intro {Γ : Set (Fml α)} {ϕ ψ : Fml α}
     (h : (Γ ∪ {ϕ}) ⊨ ψ ) : (Γ ⊨ ϕ → ψ) := by
       simp at h
-      simp[Fml.imp] 
+      simp[Fml.imp]
       grind
 
 @[simp]
 lemma imp_elim {Γ Δ : Set (Fml α)} {ϕ ψ : Fml α} (h : Γ ⊨ ϕ → ψ ) (g : Δ ⊨  ϕ ) :
     (Γ ∪ Δ ) ⊨ ψ := by
       simp[Fml.imp, Val.eval] at h g
-      simp 
+      simp
       grind
-     
+
 @[simp]
-lemma raa {Γ : Set (Fml α)} {ϕ : Fml α} 
+lemma raa {Γ : Set (Fml α)} {ϕ : Fml α}
   (h: (Γ ∪ {¬ϕ}) ⊨ ⊥) : (Γ ⊨ ϕ) := by
     simp at h
     simp
@@ -311,8 +352,8 @@ lemma raa {Γ : Set (Fml α)} {ϕ : Fml α}
 
 end Consequence
 
-def Valid {α : Type u } (ϕ : Fml α) : Prop := 
-  ∅ ⊨ ϕ 
+def Valid {α : Type u } (ϕ : Fml α) : Prop :=
+  ∅ ⊨ ϕ
 
 notation "⊨ " ϕ => Valid ϕ
 
@@ -331,12 +372,12 @@ lemma bivalid_iff {ϕ : Fml α} :
       simp[Valid]
 
 @[simp]
-lemma law_of_excluded_middle (ϕ : Fml α) : 
+lemma law_of_excluded_middle (ϕ : Fml α) :
     ⊨ ϕ ∨ ¬ϕ := by
       simp[Valid]
 
 @[simp]
-lemma law_of_non_contradiction (ϕ : Fml α) : 
+lemma law_of_non_contradiction (ϕ : Fml α) :
     ⊨ ¬(ϕ ∧ ¬ϕ) := by
       simp[Valid]
 
@@ -345,13 +386,13 @@ lemma consequence_to_valid {Γ : Finset (Fml α)} {ϕ : Fml α} :
     (Γ ⊨ ϕ ) → ⊨ (⋀ Γ) → ϕ := by
       simp
       grind
-      
+
 end Valid
 
-def Eqv {α : Type u} (ϕ ψ : Fml α) : Prop := 
+def Eqv {α : Type u} (ϕ ψ : Fml α) : Prop :=
   ⊨ (ϕ ↔ ψ)
 
-notation ϕ " ⟚ " ψ => Eqv ϕ ψ 
+notation ϕ " ⟚ " ψ => Eqv ϕ ψ
 
 namespace Eqv
 
@@ -380,7 +421,7 @@ lemma iff_negation {ϕ ψ : Fml α} (h : ϕ ⟚ ψ) : (¬ϕ) ⟚ (¬ψ) := by
   grind
 
 @[simp]
-lemma iff_conjunction {ϕ₁ ϕ₂ ψ₁ ψ₂ : Fml α} 
+lemma iff_conjunction {ϕ₁ ϕ₂ ψ₁ ψ₂ : Fml α}
   (h₁ : ϕ₁ ⟚ ψ₁) (h₂ : ϕ₂ ⟚ ψ₂) : (ϕ₁ ∧ ϕ₂) ⟚ (ψ₁ ∧ ψ₂) := by
     simp[Eqv] at h₁ h₂
     simp[Eqv]
