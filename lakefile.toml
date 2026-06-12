@@ -15,4 +15,4 @@ name = "PropositionalLogic"
 
 [[lean_exe]]
 name = "propositional_logic"
-root = "Main"
+root = "PropositionalLogic.Main"

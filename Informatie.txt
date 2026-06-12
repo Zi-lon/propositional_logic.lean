@@ -1,0 +1,21 @@
+Syntax
+- Eval
+- Sat
+- Consequence
+- Valid
+- (Eqv)
+
+Semantics
+- Eval
+- Sat
+- Consequence
+- Valid
+- Eqv
+
+Soundness
+- Soundness_der
+- Soundness
+
+Syntax -> Semantics -> Soundness
+Syntax -> Soundness
+
