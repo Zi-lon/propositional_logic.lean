@@ -1,5 +1,5 @@
-import PropositionalLogic.Syntax
-import PropositionalLogic.Semantics
+import PropositionalLogicWithGrind.Syntax
+import PropositionalLogicWithGrind.Semantics
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Set.Finite.Lemmas

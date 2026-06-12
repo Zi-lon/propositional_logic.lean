@@ -1,6 +1,6 @@
-import PropositionalLogic.Soundness
-import PropositionalLogic.Semantics
-import PropositionalLogic.Syntax
+import PropositionalLogicWithGrind.Soundness
+import PropositionalLogicWithGrind.Semantics
+import PropositionalLogicWithGrind.Syntax
 
--- def main : IO Unit := do
---   IO.println "PropositieLogica zonder Grind"
+def main : IO Unit := do
+  IO.println "PropositieLogica met Grind"

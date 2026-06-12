@@ -20,3 +20,5 @@ Syntax -> Semantics -> Soundness
 Syntax -> Soundness
 
 sat_monotone kan er uit worden gehaald en is het enige in Semantics dat geen grind gebruikt
+
+./loopScript.sh

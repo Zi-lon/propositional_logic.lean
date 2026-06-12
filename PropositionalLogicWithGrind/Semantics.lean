@@ -1,5 +1,5 @@
 import Mathlib.Data.Set.Basic
-import PropositionalLogic.Syntax
+import PropositionalLogicWithGrind.Syntax
 
 -- # Eval
 namespace Val

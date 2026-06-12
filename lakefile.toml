@@ -11,8 +11,8 @@ name = "mathlib"
 scope = "leanprover-community"
 
 [[lean_lib]]
-name = "PropositionalLogic"
+name = "PropositionalLogicWithGrind"
 
 [[lean_exe]]
 name = "propositional_logic"
-root = "PropositionalLogic.Main"
+root = "PropositionalLogicWithGrind.Main"
