@@ -68,4 +68,4 @@ theorem soundness {α : Type u} (Γ : Set (Fml α)) (ϕ : Fml α) :
     let ⟨Δ, h_sub, h_ned⟩ := h_prov
     apply Consequence.monotonicity
     apply soundness_der Δ ϕ (Classical.choice h_ned)
-    apply h_sub
+    grind

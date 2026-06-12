@@ -128,6 +128,7 @@ lemma big_conj_finset_false (Γ : Finset (Fml α)) (v : Val α) :
     ⟦⋀ Γ , v⟧ = false ↔ ∃ ϕ ∈ Γ, ⟦ϕ , v⟧ = false := by
       unfold Fml.big_conj_finset
       simp
+
 end Val
 -- # End Eval
 
