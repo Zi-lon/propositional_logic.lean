@@ -1,7 +1,6 @@
 name = "propositional_logic"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["propositional_logic"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -11,8 +10,18 @@ name = "mathlib"
 scope = "leanprover-community"
 
 [[lean_lib]]
-name = "PropositionalLogicWithGrind"
+name = "PropositionalLogic"
+
+[[lean_lib]]
+name = "PropositionalLogicGrind"
 
 [[lean_exe]]
-name = "propositional_logic"
-root = "PropositionalLogicWithGrind.Main"
+name = "bench_logic"
+root = "Experiment.MainLogic"
+
+[[lean_exe]]
+name = "bench_grind"
+root = "Experiment.MainGrind"
+
+# lake exe bench_logic
+# lake exe bench_grind
