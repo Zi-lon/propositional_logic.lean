@@ -8,7 +8,10 @@ variable { α : Type u}
 @[simp]
 lemma bivalence_one (v : Val α) (ϕ : Fml α) :
     ⟦ ϕ , v ⟧ ≠ true → ⟦ ϕ , v ⟧ = false := by
-    simp
+    intro hypothesis
+    cases hypothesis_eval : eval ϕ v
+    trivial
+    contradiction
 
 @[simp]
 lemma bot (v : Val α) : @eval α Fml.bot v = false := by
