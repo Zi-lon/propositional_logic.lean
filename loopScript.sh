@@ -1,5 +1,3 @@
-!/bin/bash
-
 LOG=resultaten/timings.log
 LOG_LOGIC=resultaten/logic.log
 LOG_GRIND=resultaten/grind.log
@@ -8,16 +6,16 @@ LOG_GRIND=resultaten/grind.log
 > "$LOG_LOGIC"
 > "$LOG_GRIND"
 
-for i in {1..2}; do
-
+for i in {1..10}; do
+  # lake clean bench_logic
   echo "Run $i - Logic" | tee -a "$LOG"
-/usr/bin/time -p lake exe bench_logic > /dev/null 2>> "$LOG_LOGIC"
+  /usr/bin/time -p lake exe bench_grind > /dev/null 2>> "$LOG_LOGIC"
   echo "--------------------------------------------------" >> "$LOG_LOGIC"
 
+  # lake clean bench_grind
   echo "Run $i - Grind" | tee -a "$LOG"
-/usr/bin/time -p lake exe bench_grind > /dev/null 2>> "$LOG_GRIND"
+  /usr/bin/time -p lake exe bench_logic > /dev/null 2>> "$LOG_GRIND"
   echo "--------------------------------------------------" >> "$LOG_GRIND"
-
 done
 
 echo "=== RESULTATEN ==="
