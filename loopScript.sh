@@ -6,17 +6,21 @@ LOG_GRIND=resultaten/grind.log
 > "$LOG_LOGIC"
 > "$LOG_GRIND"
 
-for i in {1..10}; do
-  # lake clean bench_logic
-  echo "Run $i - Logic" | tee -a "$LOG"
-  /usr/bin/time -p lake exe bench_grind > /dev/null 2>> "$LOG_LOGIC"
-  echo "--------------------------------------------------" >> "$LOG_LOGIC"
+start=$SECONDS
+for n in {1..10}; do
+  for i in {1..5}; do
 
-  # lake clean bench_grind
-  echo "Run $i - Grind" | tee -a "$LOG"
-  /usr/bin/time -p lake exe bench_logic > /dev/null 2>> "$LOG_GRIND"
-  echo "--------------------------------------------------" >> "$LOG_GRIND"
+    echo "Run $n $i - Logic" | tee -a "$LOG"
+    /usr/bin/time -p lake exe bench_logic > /dev/null 2>> "$LOG_LOGIC"
+    echo "--------------------------------------------------" >> "$LOG_LOGIC"
+
+    echo "Run $n $i - Grind" | tee -a "$LOG"
+    /usr/bin/time -p lake exe bench_grind > /dev/null 2>> "$LOG_GRIND"
+    echo "--------------------------------------------------" >> "$LOG_GRIND"
+  done
 done
+echo "duration=$(( SECONDS - start )) seconds"
+
 
 echo "=== RESULTATEN ==="
 

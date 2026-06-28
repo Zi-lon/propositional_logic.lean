@@ -5,10 +5,33 @@ namespace Val
 
 variable { α : Type u}
 
+-- set_option trace.grind true
+-- set_option trace.grind.ematch.instance true
+
+-- set_option trace.profiler true
+-- set_option trace.profiler.threshold 0
+set_option trace.grind.ematch.instance true
 @[simp]
-lemma bivalence_one (v : Val α) (ϕ : Fml α) :
+lemma bivalence_one_grind (v : Val α) (ϕ : Fml α) :
     ⟦ ϕ , v ⟧ ≠ true → ⟦ ϕ , v ⟧ = false := by
     grind
+
+@[simp]
+lemma bivalence_one_no_grind (v : Val α) (ϕ : Fml α) :
+    ⟦ ϕ , v ⟧ ≠ true → ⟦ ϕ , v ⟧ = false := by
+    intro hypothesis
+    cases hypothesis_eval : eval ϕ v
+    trivial
+    contradiction
+
+
+-- #print bivalence_one_grind
+-- #print axioms bivalence_one_grind
+
+-- #print bivalence_one_no_grind
+-- #print axioms bivalence_one_no_grind
+
+-- #print bivalence_one_grind._proof_1_1
 
 @[simp]
 lemma bot (v : Val α) : @eval α Fml.bot v = false := by
